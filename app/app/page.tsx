@@ -4,9 +4,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 
-import { useUser } from '@/hooks/useUser';
-import { useSessionContext, useSupabaseClient } from '@supabase/auth-helpers-react';
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -29,11 +26,20 @@ import PayDialog from '@/components/pay-dialog';
 import AppAds from '@/components/editor/app-ads';
 
 const Page = () => {
-    const { user } = useUser();
-    const { session } = useSessionContext();
-    const supabaseClient = useSupabaseClient();
-    const [currentUser, setCurrentUser] = useState<Profile>()
+    const currentUser: Profile = {
+        id: "dummy-id",
+        username: "DummyUser",
+        full_name: "Dummy User",
+        avatar_url: "/default-avatar.png",
+        images_generated: 0,
+        paid: true,
+        subscription_id: null,
+        user_metadata: {
+            email: "santosh@mypad.in"
+        }
+    };
 
+    const user = currentUser;
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [isImageSetupDone, setIsImageSetupDone] = useState<boolean>(false);
     const [removedBgImageUrl, setRemovedBgImageUrl] = useState<string | null>(null);
@@ -43,22 +49,6 @@ const Page = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     const getCurrentUser = async (userId: string) => {
-        try {
-            const { data: profile, error } = await supabaseClient
-                .from('profiles')
-                .select('*')
-                .eq('id', userId)
-
-            if (error) {
-                throw error;
-            }
-
-            if (profile) {
-                setCurrentUser(profile[0]);
-            }
-        } catch (error) {
-            console.error('Error fetching user profile:', error);
-        }
     };
 
     const handleUploadImage = () => {
@@ -214,14 +204,13 @@ const Page = () => {
 
     useEffect(() => {
       if (user?.id) {
-        getCurrentUser(user.id)
+        // getCurrentUser(user.id)
       }
     }, [user])
     
     return (
         <>
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1609710199882100" crossOrigin="anonymous"></script>
-            {user && session && session.user && currentUser ? (
+            (
                 <div className='flex flex-col h-screen'>
                     <div className="ml-6">
                         <RandomColorAd />
@@ -400,9 +389,7 @@ const Page = () => {
                     )} 
                     <PayDialog userDetails={currentUser as any} userEmail={user.user_metadata.email} isOpen={isPayDialogOpen} onClose={() => setIsPayDialogOpen(false)} /> 
                 </div>
-            ) : (
-                <Authenticate />
-            )}
+            )
         </>
     );
 }

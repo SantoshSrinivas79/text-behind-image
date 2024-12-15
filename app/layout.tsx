@@ -24,23 +24,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={GeistSans.className}>
-        <SupabaseProvider>
-            <UserProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="light"
-                enableSystem
-                disableTransitionOnChange
-              >
-                <div>
-                  {children}
-                  <Analytics />
-                  <SpeedInsights />
-                  <Toaster />
-                </div>
-              </ThemeProvider>
-            </UserProvider>
-        </SupabaseProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div>
+            {children}
+            <Analytics />
+            <SpeedInsights />
+            <Toaster />
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );
